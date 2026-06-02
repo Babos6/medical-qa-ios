@@ -1,0 +1,119 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="theme-color" content="#0f766e" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-title" content="医学问答" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+    <title>医学教材问答 PWA</title>
+    <link rel="manifest" href="./manifest.webmanifest" />
+    <link rel="stylesheet" href="./styles.css" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.10.38/pdf.min.mjs" type="module"></script>
+  </head>
+  <body>
+    <main class="shell">
+      <header class="topbar">
+        <div>
+          <h1>医学教材问答</h1>
+          <p id="statusLine">纯前端 PWA 版，教材和密钥只保存在本机浏览器。</p>
+        </div>
+        <div class="top-actions">
+          <button id="settingsButton" class="secondary" type="button">设置</button>
+          <button id="libraryButton" class="secondary" type="button">教材</button>
+        </div>
+      </header>
+
+      <section id="settingsPanel" class="panel" hidden>
+        <div class="panel-head">
+          <h2>设置</h2>
+          <span>DeepSeek Key 会保存在当前浏览器的 IndexedDB 中。</span>
+        </div>
+        <div class="settings-grid">
+          <label>
+            <span>DeepSeek API Key</span>
+            <input id="deepseekKeyInput" type="password" autocomplete="off" placeholder="sk- 或你的 DeepSeek Key" />
+          </label>
+          <label>
+            <span>模型</span>
+            <select id="modelInput">
+              <option value="deepseek-v4-flash">deepseek-v4-flash</option>
+              <option value="deepseek-v4-pro">deepseek-v4-pro</option>
+            </select>
+          </label>
+        </div>
+        <div class="actions">
+          <button id="saveSettingsButton" class="primary" type="button">保存设置</button>
+          <button id="clearSettingsButton" class="danger" type="button">清空密钥</button>
+        </div>
+      </section>
+
+      <section id="libraryPanel" class="panel">
+        <div class="panel-head">
+          <h2>教材库</h2>
+          <span>上传 PDF 后会在本机浏览器内抽取文字并建立索引。</span>
+        </div>
+        <div class="upload-row">
+          <input id="pdfInput" type="file" accept="application/pdf,.pdf" multiple />
+          <button id="indexButton" class="primary" type="button">导入教材</button>
+          <button id="refreshButton" class="secondary" type="button">刷新</button>
+        </div>
+        <div id="progress" class="progress" hidden>
+          <div id="progressBar"></div>
+        </div>
+        <div id="bookList" class="book-list empty">暂无教材。</div>
+      </section>
+
+      <section class="ask-panel">
+        <textarea id="questionInput" rows="5" placeholder="输入问题，例如：等渗性脱水的病因、临床表现、诊断和治疗"></textarea>
+        <div class="ask-actions">
+          <label class="switch"><input id="useDeepseekInput" type="checkbox" checked /> DeepSeek 回答</label>
+          <button id="searchButton" class="secondary" type="button">只检索</button>
+          <button id="askButton" class="primary" type="button">提问</button>
+        </div>
+      </section>
+
+      <section class="result-grid">
+        <article class="panel answer-panel">
+          <div class="panel-head">
+            <h2>回答</h2>
+            <span id="busyText"></span>
+          </div>
+          <div id="answerBox" class="answer empty">回答会显示在这里。</div>
+        </article>
+
+        <aside class="panel citations-panel">
+          <div class="panel-head">
+            <h2>出处</h2>
+            <span id="citationCount">0</span>
+          </div>
+          <div id="citationList" class="citation-list empty">暂无出处。</div>
+        </aside>
+      </section>
+    </main>
+
+    <template id="bookTemplate">
+      <div class="book-row">
+        <div>
+          <div class="book-name"></div>
+          <div class="book-meta"></div>
+        </div>
+        <button class="danger delete-book" type="button">删除</button>
+      </div>
+    </template>
+
+    <template id="citationTemplate">
+      <details class="citation-card">
+        <summary>
+          <span class="citation-id"></span>
+          <span class="citation-title"></span>
+        </summary>
+        <div class="citation-meta"></div>
+        <p class="citation-text"></p>
+      </details>
+    </template>
+
+    <script src="./app.js" type="module"></script>
+  </body>
+</html>
